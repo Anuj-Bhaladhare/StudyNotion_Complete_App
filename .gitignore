@@ -1,5 +1,5 @@
 # dependencies
-/Client Side/node_modules
+/Client_Side/node_modules
 /Server_Side/node_modules
 /.pnp
 .pnp.js
@@ -11,11 +11,11 @@
 /build
 
 # backage json file
-/Client Side/package-lock.json*
+/Client_Side/package-lock.json*
 /Server_Side/package-lock.json*
 
 # envoirment file
-/Client Side/.env
+/Client_Side/.env
 /Server_Side/.env
 
 # misc

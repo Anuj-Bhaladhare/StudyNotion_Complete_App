@@ -1,6 +1,6 @@
 # dependencies
-/front-end/node_modules
-/back-end/node_modules
+/Client Side/node_modules
+/Server_Side/node_modules
 /.pnp
 .pnp.js
 
@@ -11,12 +11,12 @@
 /build
 
 # backage json file
-/front-end/package-lock.json*
-/back-end/package-lock.json*
+/Client Side/package-lock.json*
+/Server_Side/package-lock.json*
 
 # envoirment file
-/front-end/.env
-/back-end/.env
+/Client Side/.env
+/Server_Side/.env
 
 # misc
 .DS_Store

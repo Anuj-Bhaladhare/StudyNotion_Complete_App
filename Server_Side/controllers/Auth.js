@@ -266,6 +266,14 @@ const login = async (req, res) => {
 const changePassword = async (req, res) => {
 
     try {
+        Home work
+        // get data from req body
+        // get oldPassword, newPassword, confirm New Password
+        // validate
+
+        // update pwd in DB
+        // send mail - Password updated
+        // return response
 
     } catch (error) {
 

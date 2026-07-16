@@ -1,35 +1,86 @@
 const pool = require("./../config/database.js");
 
-const checkUserExist = async (email) => {
+const findUserByEmail = async (email) => {
     try {
-        console.log("checkUserExist");
+        const result = await pool.query(
+            `
+                SELECT * FROM users WHERE email = $1 LIMIT 1;
+            `,
+            [email]
+        );
+
+        return result.rows.length > 0 ? result.rows[0] : null;
+
     } catch (error) {
-        console.log("Error Occured in Check User Exist in Database")
-        throw error;
+        console.error("Error finding user by email:", error);
+        throw new Error("Failed to fetch user from database.");
     }
-}
+};
 
 
-const createUserEntry = async (email) => {
+const createUserEntry = async (
+    first_name,
+    last_name,
+    email,
+    hash_password,
+    account_type,
+    phone_number = null
+) => {
     try {
-        console.log("createUserEntry");
+        const { rows } = await pool.query(
+            `
+            INSERT INTO users (
+                first_name,
+                last_name,
+                email,
+                password_hash,
+                account_type,
+                phone_number
+            )
+            VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING id, first_name, last_name, email, account_type, phone_number, created_at;
+            `,
+            [first_name, last_name, email, hash_password, account_type, phone_number]
+        );
 
-        // // CREATE USER QUERY => 
-        // const query = `
-        //     INSERT INTO users
-        //         (first_name, last_name, email, password_hash, account_type)
-        //     VALUES
-        //         ('anuj', 'Bhaladhare', 'anuj@gmail.com', 'sdfsdf5sdf5sdf584s2d1f5', 'Student');
-        // `;
+        return rows[0];
 
     } catch (error) {
-        console.log("Error Occured in Create User Entry in Database")
+
+        console.error("Database Error [createUserEntry]:", error);
         throw error;
+
+    }
+
+};
+
+
+const verifyUserDatabase = async (email) => {
+    try {
+        const db_result = await pool.query(
+            `
+                UPDATE users
+                SET is_verified = TRUE
+                WHERE email = $1;
+            `,
+            [email]
+        );
+
+        return db_result?.rowCount === 1 ? true : false;
+
+
+    } catch (error) {
+
+        console.error("Database Error [verifyUserDatabase]:", error.message);
+        throw error;
+
     }
 }
 
 
 module.exports = {
-    checkUserExist,
-    createUserEntry
+    findUserByEmail,
+    createUserEntry,
+    verifyUserDatabase
 }
+

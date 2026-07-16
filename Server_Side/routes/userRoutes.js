@@ -3,7 +3,7 @@ const router = express.Router();
 
 
 const { 
-    signup, -> yaha se chalu kar bhai -> controller me ja
+    signup,
     login, 
     resetPassword, 
     forgotPassword, 

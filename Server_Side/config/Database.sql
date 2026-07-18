@@ -48,10 +48,10 @@ CREATE TABLE courses (
     language VARCHAR(50) DEFAULT 'English',
 
     level VARCHAR(20) NOT NULL DEFAULT 'Beginner'
-        CHECK (level IN ('Beginner', 'Intermediate', 'Advanced', 'All Levels')),
+        CHECK (level IN ('Beginner','Intermediate','Advanced','All Levels')),
 
     status VARCHAR(20) NOT NULL DEFAULT 'DRAFT'
-        CHECK (status IN ('DRAFT', 'PUBLISHED', 'ARCHIVED')),
+        CHECK (status IN ('DRAFT','PUBLISHED','ARCHIVED')),
 
     duration_minutes INTEGER DEFAULT 0
         CHECK (duration_minutes >= 0),
@@ -65,10 +65,17 @@ CREATE TABLE courses (
     total_students INTEGER DEFAULT 0
         CHECK (total_students >= 0),
 
+    category_id BIGINT NOT NULL,
+
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
+    CONSTRAINT fk_course_category
+        FOREIGN KEY (category_id)
+        REFERENCES categories(id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
 );
 
 
@@ -209,6 +216,31 @@ CREATE TABLE rating_and_reviews (
 CREATE TABLE tags (
     id BIGSERIAL PRIMARY KEY,
 
+    tag_id INT NOT NULL,
+
+    name VARCHAR(100) NOT NULL UNIQUE,
+
+    description TEXT,
+
+    course_id BIGINT NOT NULL,
+
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_course_id
+        FOREIGN KEY (course_id)
+        REFERENCES courses(id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+);
+
+
+CREATE TABLE categories (
+    id BIGSERIAL PRIMARY KEY,
+
     name VARCHAR(100) NOT NULL UNIQUE,
 
     description TEXT,
@@ -275,10 +307,19 @@ CREATE TABLE otp (
 
 
 
+CREATE TABLE course_student (
+    id SERIAL PRIMARY KEY,
+    course_id INT NOT NULL,
+    student_id INT NOT NULL,
+    CONSTRAINT fk_course FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
+    CONSTRAINT fk_student FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+
 
 users               -> DONE
 profiles            -> DONE
-categories          -> 
+categories          -> DONE
 tags                -> DONE
 courses             -> DONE
 course_tags         -> 
@@ -295,4 +336,5 @@ wishlists           ->
 Sub_Section         -> DONE
 OTP                 -> DONE
 Rating_and_Reviews  -> DONE
+course_student      -> DONE
 

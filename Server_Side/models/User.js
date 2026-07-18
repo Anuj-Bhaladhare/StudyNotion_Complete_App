@@ -1,5 +1,6 @@
 const pool = require("./../config/database.js");
 
+
 const findUserByEmail = async (email) => {
     try {
         const result = await pool.query(
@@ -78,9 +79,31 @@ const verifyUserDatabase = async (email) => {
 }
 
 
+const findUserByUserId = async (user_id) => {
+    try {
+
+        const result = await pool.query(
+            `
+                SELECT * FROM users WHERE id = $1;
+            `,
+            [user_id]
+        );
+
+        return result.rows.length > 0 ? result.rows[0] : null;
+
+    } catch (error) {
+
+        console.error("Database Error [verifyUserDatabase]:", error.message);
+        throw error;
+
+    }
+}
+
+
 module.exports = {
     findUserByEmail,
     createUserEntry,
-    verifyUserDatabase
+    verifyUserDatabase,
+    findUserByUserId
 }
 

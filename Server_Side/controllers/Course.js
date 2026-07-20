@@ -2,7 +2,8 @@ const {
 	createCourseModule, 
 	getAllCourseList, 
 	coursesListByInstructorId, 
-	coursesListByStudentId 
+	coursesListByStudentId,
+	getStudentCoursesId
 } = require("./../models/Course.js");
 const { Category } = require("./../models/Category.js");
 const { findUserByUserId } = require("./../models/User.js");
@@ -195,7 +196,7 @@ const getCoursesByInstructorId = async (req, res) => {
 
 const getCoursesByStudentId = async (req, res) => {
 	try {
-		YAHA SE CHALU KAR -> Many to Many Junction table
+
 		const { student_id } = req.body;
 
 		if ( !student_id ) {
@@ -205,21 +206,32 @@ const getCoursesByStudentId = async (req, res) => {
 			});
 		}
 
-		const db_result = await coursesListByStudentId(student_id);
+		// get Student Courses id
+		const course_id_result = await getStudentCoursesId(student_id);
 
-		if ( !db_result ) {
-			return res.status(200).json({
-				"success": true,
-				"message": "Student Courses get Successfully",
-				"data": {
-					"courses": db_result
-				}
-			});
-		} else {
-			return res.status(404).json({
-				"success": false,
-				"message": "Student Courses Not Found"
-			});
+		if (course_id_result) {
+
+			const db_result = await coursesListByStudentId({student_ids: course_id_result});
+
+			if ( db_result ) {
+
+				return res.status(200).json({
+					"success": true,
+					"message": "Student Courses get Successfully",
+					"data": {
+						"courses": db_result
+					}
+				});
+
+			} else {
+
+				return res.status(404).json({
+					"success": false,
+					"message": "Student Courses Not Found"
+				});
+
+			}
+			
 		}
 
 	} catch (error) {
@@ -241,4 +253,3 @@ module.exports = {
 	getCoursesByInstructorId,
 	getCoursesByStudentId
 }
-

@@ -70,10 +70,47 @@ const coursesListByInstructorId = async (instructor_id) => {
 }
 
 
-const coursesListByStudentId = async () => {
+const getStudentCoursesId = async (student_id) => {
     try {
 
-        console.log("coursesListByStudentId");
+        const result = await pool.query(
+            `
+                SELECT * FROM course_student WHERE student_id = $1;
+            `,
+            [student_id]
+        );
+
+        return result.rows.length > 0 ? result.rows : false;
+
+    } catch (error) {
+
+        console.log("Error Occured in get Student Courses Id Module: ", error);
+        throw new error;
+
+    }
+}
+
+
+const coursesListByStudentId = async ({student_ids}) => {
+    try {
+
+        let course_data = [];
+
+        for (const cour_id in student_ids) {
+
+            const result = await pool.query(
+                `
+                    SELECT * FROM courses WHERE id = $1;
+                `,
+                [cour_id.course_id]
+            );
+
+            if ( result.rows.length > 0 ) {
+                course_data.push(result.rows[0]);
+            }
+        }
+
+        return course_data.length > 0 ? course_data : false;
 
     } catch (error) {
 
@@ -88,7 +125,6 @@ module.exports = {
     createCourseModule,
     getAllCourseList, 
 	coursesListByInstructorId, 
-	coursesListByStudentId 
+	coursesListByStudentId,
+    getStudentCoursesId
 }
-
-

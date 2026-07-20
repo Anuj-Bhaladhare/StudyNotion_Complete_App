@@ -1,15 +1,20 @@
-import React from 'react';
+import React from "react";
+import { Route, Routes } from "react-router-dom"
 
-function App() {
-  
+
+
+import Home from "./pages/Home.jsx";
+
+const App = () => {
+
   return (
-    <>
-      <h1 className="text-3xl font-bold underline">
-        Hello StudyNotion 
-        <br />
-        by Anuj Developer
-      </h1>
-    </>
+    <div className="w-screen min-h-screen bg-richblack-900 flex flex-col font-inter">
+
+      <Routes>
+        <Route path="/" element = { <Home /> }/>
+      </Routes>
+
+    </div>
   );
 
 }

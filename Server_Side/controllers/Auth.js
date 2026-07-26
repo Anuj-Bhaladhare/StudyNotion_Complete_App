@@ -26,6 +26,8 @@ const generateOTP = () => {
 
 // User SignUp Controller
 const signup = async (req, res) => {
+
+    
     try {
       
         const { first_name, last_name, email, phone_number, password, confirm_password, account_type } = req.body;
@@ -97,6 +99,11 @@ const signup = async (req, res) => {
                         "data": create_user
                     });
                 }
+            } else {
+                return res.status(404).json({
+                    "success": false,
+                    "message": "Wrong Email Address. Please Provide Correct Email"
+                });
             }
         }
 
@@ -199,12 +206,13 @@ const login = async (req, res) => {
                 maxAge: 24 * 60 * 60 * 1000 // 1 day
             }
         );
-
+  
         // Send successful login response with user data and token (if required)
         return res.status(200).json({
             "success": true,
             "message": "User logged in successfully.",
-            "data": jwt_payload
+            "data": jwt_payload,
+            "token": token
         });
 
     } catch (error) {

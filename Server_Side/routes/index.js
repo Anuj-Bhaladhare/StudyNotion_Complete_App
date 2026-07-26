@@ -5,11 +5,13 @@ const router = express.Router();
 const userRouter = require("./userRoutes.js");
 const emailVerification = require("./emailVerification.js");
 const courseRoutes = require("./courseRoutes.js");
+const categoriesRoutes = require("./categoriesRoutes.js");
 
 // Define Router Path
 router.use("/auth", userRouter);
 router.use("/email", emailVerification);
 router.use("/course", courseRoutes);
+router.use("/course/category", categoriesRoutes);
 
 
 // Exports Router Module

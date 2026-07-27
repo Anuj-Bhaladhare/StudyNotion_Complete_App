@@ -2,7 +2,8 @@ const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export const auth = {
     LOGIN_API: BASE_URL + "/auth/login",
-    SIGNUP_API: BASE_URL + "/auth/signup"
+    SIGNUP_API: BASE_URL + "/auth/signup",
+    FORGOT_PASSWORD_API: BASE_URL + "/auth/forgot-password"
     
 }
 
@@ -14,4 +15,3 @@ export const email = {
 export const categories = {
     CATEGORIES_API: BASE_URL + "/course/category/show-all-category"
 }
-

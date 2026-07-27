@@ -4,9 +4,9 @@ const jwt = require("jsonwebtoken");
 
 require("dotenv").config();
 
-const { findUserByEmail, createUserEntry } = require("./../models/User.js");
+const { findUserByEmail, createUserEntry, updateUserPassword } = require("./../models/User.js");
 const { sendVerificationEmail } = require("./Email.js");
-const { generateOTP } = require("./../models/OTP.js");
+const { generateOTP, findLatestOtpByEmail } = require("./../models/OTP.js");
 
 
 // User SignUp Controller
@@ -233,7 +233,71 @@ const resetPassword = async (req, res) => {
 // Forgot Password Controller
 const forgotPassword = async (req, res) => {
     try {
-        console.log("forgotPassword");
+        
+        const { email, email_otp, password, confirm_password } = req.body;
+
+        if ( !email, !email_otp, !password, !confirm_password ) {
+            return res.status(422).json({
+                "success": false,
+                "title": "Missing Required Fields",
+                "status": 422,
+                "message": "The request body is missing mandatory information required to complete this action.",
+            });
+        } 
+
+        const find_recent_otp = await findLatestOtpByEmail(email);
+        
+        if (!find_recent_otp) {
+            return res.status(400).json({
+                "success": false,
+                "title": "OTP Not Found",
+                "status": 400,
+                "message": "OTP is Not Available in Database."
+            });
+        }
+
+        if ( find_recent_otp.otp !== email_otp ) {
+            return res.status(401).json({
+                "success": false,
+                "title": "Wrong OTP",
+                "status": 401,
+                "message": "Please Provide Correct OTP"
+            });
+        }
+
+        if ( password !== confirm_password ) {
+            return res.status(400).json({
+                "success": false,
+                "title": "Validation Error",
+                "status": 400,
+                "detail": "One or more request parameters failed validation.",
+                "errors": {
+                    "confirmPassword": "The confirmation password does not match the password."
+                }
+            });
+        }
+
+        // Encrypt Password
+        const hash_password = await bcrypt.hash(password, 10);
+
+        const update_db_password = await updateUserPassword(email, hash_password);
+
+        if (update_db_password) {
+
+            return res.status(200).json({
+                "success": true,
+                "title": "Password Update successfully.",
+                "message": "Your Password is successfully Update.",
+            });
+
+        } else {
+            return res.status(401).json({
+                "success": false,
+                "title": "Password Not Update.",
+                "message": "Your Password is successfully Update."
+            });
+        }
+        
     } catch (error) {
         console.log("Error Occured in Forgot Password Controller", error.mesage);
         return res.status(500).json({

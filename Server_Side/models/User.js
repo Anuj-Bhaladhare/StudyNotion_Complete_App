@@ -100,10 +100,34 @@ const findUserByUserId = async (user_id) => {
 }
 
 
+const updateUserPassword = async (email, hash_password) => {
+    try {
+
+        const result = await pool.query(
+            `
+                UPDATE users
+                SET password_hash = $1
+                WHERE email = $2;
+            `,
+            [hash_password, email]
+        );
+
+        return result.rowCount > 0 ? true : false;
+
+    } catch (error) {
+
+        console.error("Database Error [updateUserPassword]:", error.message);
+        throw error;
+
+    }
+}
+
+
 module.exports = {
     findUserByEmail,
     createUserEntry,
     verifyUserDatabase,
-    findUserByUserId
+    findUserByUserId,
+    updateUserPassword
 }
 

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
+import { toast } from "react-hot-toast";
 import { ACCOUNT_TYPE } from "./../../../utils/constants.js";
 import Tab from "./../../common/Tab.jsx";
 import relayService from "./../../../services/axios/hook.js";
@@ -10,6 +11,7 @@ const SignupForm = () => {
 
     const navigate = useNavigate();
     const [ accountType, setAccountType ] = useState(ACCOUNT_TYPE.STUDENT);
+    const [ loading, setLoading ] = useState(false);
     const [ signupFormData, setSignupFormData ] = useState({
         firstName: null,
         lastName: null,
@@ -38,9 +40,11 @@ const SignupForm = () => {
 
     const handleOnSubmit = async (event) => {
         event.preventDefault();
-        console.log("handleOnSubmit");
         try {
+            // Desable all Input Field
+            setLoading(true);
 
+            // Call Signup API
             const signup_response = await relayService({
                 url: auth.SIGNUP_API, 
                 method: "POST", 
@@ -54,23 +58,58 @@ const SignupForm = () => {
                 }
             });
 
-            if ( signup_response?.status === 201 && signup_response?.data?.success === true ) {
+            if ( signup_response?.status === 201 && signup_response?.data?.success ) {
+
+                // Success Pop-Up
+                toast.success("Send OTP to Your Email");
+
+                // Navigate to Email Verification Page
                 navigate("/verify-user", {
                     state: {
-                        email: signupFormData.email
+                        email: signupFormData.email,
+                        resend_it: false
                     }
                 });
+
             }
 
         } catch (error) {
-            console.log("Signup Error -> ", error);
+
+            // if User Already Exists
+            if ( error?.response?.data?.title === "User Already Exists") {
+
+                toast.error(error?.response?.data?.errors?.email);
+                navigate("/login");
+
+            // if Password and Confirm Password is not match
+            } else if ( error?.response?.data?.title === "Validation Error" ) {
+
+                toast.error(error?.response?.data?.errors?.confirmPassword);
+                setLoading(false);
+
+            // Incorrect Email
+            } else if ( error?.response?.data?.wrong_email === "Wrong Email Address" ) {
+
+                toast.error(error?.response?.data?.message);
+                setLoading(false);
+
+            } else {
+                // Enable all Input Field
+                setLoading(false);
+
+                // show Error Pop Up
+                toast.error("Something went Wrong");
+
+                // Print Error in Console
+                console.log("Signup Error -> ", error.response);
+            }
         }
     }
 
     return (
         <div>
             {/* Tab */}
-            <Tab tabData={tabData} field={accountType} setField={setAccountType} />
+            <Tab tabData={tabData} field={accountType} setField={setAccountType} loading={loading}/>
             {/* Form */}
             <form onSubmit={handleOnSubmit} className="flex w-full flex-col gap-y-4">
                 <div className="flex gap-x-4">
@@ -83,6 +122,7 @@ const SignupForm = () => {
                             type="text"
                             name="firstName"
                             value={signupFormData.firstName}
+                            readOnly={loading}
                             onChange={ (event) => {
                                 setSignupFormData( (prev) => ({
                                     ...prev, 
@@ -104,6 +144,7 @@ const SignupForm = () => {
                             required
                             type="text"
                             name="lastName"
+                            readOnly={loading}
                             value={signupFormData.lastName}
                             onChange={(event) => {
                                 setSignupFormData( (prev) => ({
@@ -127,6 +168,7 @@ const SignupForm = () => {
                     required
                     type="text"
                     name="email"
+                    readOnly={loading}
                     value={signupFormData.email}
                     onChange={(event) => {
                         setSignupFormData( (prev) => ({
@@ -150,6 +192,7 @@ const SignupForm = () => {
                             required
                             type={showPassword.password ? "text" : "password"}
                             name="password"
+                            readOnly={loading}
                             value={signupFormData.password}
                             onChange={(event) => {
                                 setSignupFormData( (prev) => ({
@@ -186,6 +229,7 @@ const SignupForm = () => {
                             required
                             type={showPassword.confirmPassword ? "text" : "password"}
                             name="confirmPassword"
+                            readOnly={loading}
                             value={signupFormData.confirmPassword}
                             onChange={(event) => {
                                 setSignupFormData( (prev) => ({
@@ -217,6 +261,7 @@ const SignupForm = () => {
                 </div>
                 <button
                     type="submit"
+                    disabled={loading}
                     className="mt-6 rounded-[8px] bg-yellow-50 py-[8px] px-[12px] font-medium text-richblack-900"
                 >
                     Create Account
@@ -227,3 +272,17 @@ const SignupForm = () => {
 }
 
 export default SignupForm;
+
+
+
+
+
+
+
+// DONE -> Disable the Sign Up button.
+// DONE -> and all field is read-only - untile login successfull or unseccessfull
+// -> and add loading
+// DONE -> create pop-up for the otp sent to your email
+
+// -> user navigate to login page if user allready exit
+

@@ -1,33 +1,17 @@
 
 const bcrypt = require("bcrypt");
-const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 
 require("dotenv").config();
 
-const { 
-    findUserByEmail, 
-    createUserEntry 
-} = require("./../models/User.js");
+const { findUserByEmail, createUserEntry } = require("./../models/User.js");
+const { sendVerificationEmail } = require("./Email.js");
+const { generateOTP } = require("./../models/OTP.js");
 
-const { sendVerificationEmail } = require("./sendEmails.js");
-
-
-// Generate OTP
-const generateOTP = () => {
-    
-    const otp = crypto.randomInt(100000, 1000000).toString();
-
-    console.log("OTP", otp);
-
-    return otp;
-
-}
 
 // User SignUp Controller
 const signup = async (req, res) => {
 
-    
     try {
       
         const { first_name, last_name, email, phone_number, password, confirm_password, account_type } = req.body;
@@ -80,6 +64,7 @@ const signup = async (req, res) => {
 
         // Send Verification Email
         if (email_otp) {
+
             const otp_send_mail = await sendVerificationEmail( 
                 email,  
                 email_otp,  
@@ -102,10 +87,12 @@ const signup = async (req, res) => {
             } else {
                 return res.status(404).json({
                     "success": false,
+                    "wrong_email": "Wrong Email Address",
                     "message": "Wrong Email Address. Please Provide Correct Email"
                 });
             }
         }
+
 
         
 
@@ -169,9 +156,9 @@ const login = async (req, res) => {
         if ( !match_password ) {
             return res.status(401).json({
                 "success": false,
-                "title": "Invalid email or password",
+                "title": "Invalid password.",
                 "status": 401,
-                "message": "Password is In-Correct",
+                "message": "Password is InCorrect, please provide Correct Password",
             });
         }
 
@@ -211,8 +198,10 @@ const login = async (req, res) => {
         return res.status(200).json({
             "success": true,
             "message": "User logged in successfully.",
-            "data": jwt_payload,
-            "token": token
+            "data": {
+                "user": jwt_payload,
+                "token": token
+            }
         });
 
     } catch (error) {
@@ -277,5 +266,5 @@ module.exports = {
     login, 
     resetPassword, 
     forgotPassword, 
-    changePassword 
+    changePassword
 }

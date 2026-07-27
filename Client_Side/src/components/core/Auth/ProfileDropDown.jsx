@@ -4,14 +4,18 @@ import { Link, useNavigate } from "react-router-dom";
 import { VscDashboard, VscSignOut } from "react-icons/vsc";
 import { AiOutlineCaretDown } from "react-icons/ai"
 
-import { useAppDispatch, useAppSelector } from "./../../../redux/hooks/index.ts";
-import { login, logout } from "./../../../redux/slices/authSlice.js"
+// import { useAppDispatch, useAppSelector } from "./../../../redux/hooks/index.ts";
+// import { login, logout } from "./../../../redux/slices/authSlice.js"
 
 const ProfileDropdown = () => {
-    const { user } = useAppSelector((state) => state.profile);
+    // const { user } = useAppSelector((state) => state.profile);
+    const user = {
+        image: "https://avatars.githubusercontent.com/u/125978464?v=4",
+        firstName: "Anuj"
+    }
     const [open, setOpen] = useState(false);
 
-    const dispatch = useAppDispatch();
+    // const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     return (
@@ -39,7 +43,7 @@ const ProfileDropdown = () => {
                         </Link>
                         <div
                             onClick={() => {
-                                dispatch(logout(navigate))
+                                // dispatch(logout(navigate))
                                 setOpen(false)
                             }}
                             className="flex w-full items-center gap-x-1 py-[10px] px-[12px] text-sm text-richblack-100 hover:bg-richblack-700 hover:text-richblack-25"

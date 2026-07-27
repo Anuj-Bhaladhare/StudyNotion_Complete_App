@@ -1,6 +1,6 @@
 import React from "react";
 
-const Tab = ({ tabData, field, setField }) => {
+const Tab = ({ tabData, field, setField, loading }) => {
     return (
         <div
             style={{
@@ -12,6 +12,7 @@ const Tab = ({ tabData, field, setField }) => {
                 <button
                     key={tab.id}
                     onClick={() => setField(tab.type)}
+                    disabled={loading}
                     className={`${
                     field === tab.type
                         ? "bg-richblack-900 text-richblack-5"

@@ -7,7 +7,8 @@ const {
     login, 
     resetPassword, 
     forgotPassword, 
-    changePassword 
+    changePassword,
+    resendOTP
 } = require("./../controllers/Auth.js");
 
 
@@ -17,6 +18,7 @@ router.post("/login", login);
 router.post("/reset-password", resetPassword);
 router.post("/forgot-password", forgotPassword);
 router.post("/change-password", changePassword);
+
 
 
 module.exports = router;

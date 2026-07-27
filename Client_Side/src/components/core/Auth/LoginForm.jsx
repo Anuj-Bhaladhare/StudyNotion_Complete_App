@@ -1,12 +1,19 @@
 import React, { useState } from "react";
 import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
+import { toast } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import relayService from "./../../../services/axios/hook.js";
-import { auth } from "./../../../services/apis.js"
+import { auth } from "./../../../services/apis.js";
+// Redux State managemnt - globle state
+import { useAppDispatch, useAppSelector } from "./../../../redux/hooks/index.ts"
+import { setToken } from "./../../../redux/slices/authSlice.js";
+import { setUser } from "./../../../redux/slices/profileSlice.js";
+
 
 const LoginForm = () => {
 
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
     const [ showPassword, setShowPassword ] = useState(false);
     const [ loginFormData, setLoginFormData ] = useState({
@@ -15,9 +22,6 @@ const LoginForm = () => {
     });
 
     // Login API Calling
-
-
-
     const handleOnSubmit = async (event) => {
         event.preventDefault();
 
@@ -32,14 +36,62 @@ const LoginForm = () => {
                 }
             })
 
-            if ( login_result.status === 200 ) {
-                navigate("/dashboard");
-            } else {
-                console.log("User Not Login");
+            console.log("login_result ===> ", login_result);
+
+            if ( login_result?.status === 200 && login_result?.data?.success ) {
+
+                // User Data and JWT Token store in local-storage
+                localStorage.setItem("token", JSON.stringify(login_result?.data?.data?.user));
+                localStorage.setItem("user", JSON.stringify(login_result?.data?.data?.token));
+
+                // set JWT Token
+                dispatch(setToken(login_result?.data?.data?.token));
+
+                // set User
+                dispatch(setUser(login_result?.data?.data?.user));
+
+                // // Configure your API client
+                // axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`;
+
+                // Redirect the user
+                navigate("/user/dashboard");
+
             }
 
         } catch (error) {
-            console.log("login error ====> ", error);
+
+            if ( error?.response?.data?.title === "User Not Exists is System" ) {
+
+                toast.error(error?.response?.data?.detail);
+                navigate("/signup");
+                 
+            } else if (error?.response?.data?.title === "User Not Verified") {
+
+                toast.error(error?.response?.data?.message);
+
+                navigate("/verify-user", {
+                    state: {
+                        email: loginFormData.email,
+                        resend_it: true
+                    }
+                });
+
+            } else if (error?.response?.data?.title === "Invalid password.") {
+
+                toast.error(error?.response?.data?.message);
+
+                setLoginFormData( (prev) => ({
+                    ...prev,
+                    password: ""
+                }))
+
+            } else {
+
+                toast.error("Something Went Wrong");
+                console.log("login error ====> ", error.response);
+
+            }
+            
         }
 
     }
@@ -116,6 +168,7 @@ const LoginForm = () => {
             </button>
         </form>
     )
+
 }
 
 export default LoginForm;

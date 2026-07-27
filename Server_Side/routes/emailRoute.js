@@ -2,10 +2,13 @@ const express = require("express");
 const router = express.Router();
 
 const {
-    verifyUserEmail
-} = require("./../controllers/emailVerification.js");
+    verifyUserEmail,
+    resendOTP
+} = require("../controllers/Email.js");
 
 
 router.post("/email-verification", verifyUserEmail);
+router.post("/resend-verification-otp", resendOTP);
 
 module.exports = router;
+

@@ -1,4 +1,17 @@
 const pool = require("./../config/database.js");
+const crypto = require("crypto");
+
+
+// Generate OTP
+const generateOTP = () => {
+    
+    const otp = crypto.randomInt(100000, 1000000).toString();
+
+    console.log("OTP", otp);
+
+    return otp;
+
+}
 
 
 // a function -> to send emails
@@ -48,6 +61,7 @@ const findLatestOtpByEmail = async (email) => {
 
 
 module.exports = {
+    generateOTP,
     insert_OTP_Database,
     findLatestOtpByEmail
 }

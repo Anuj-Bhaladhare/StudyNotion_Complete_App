@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import OtpInput from "react-otp-input";
 import { BiArrowBack } from "react-icons/bi";
 import { RxCountdownTimer } from "react-icons/rx";
@@ -19,37 +20,89 @@ const VerifyEmail = () => {
         otp: null
     });
 
-    const sendOtp = () => {
-        console.log("send Otp");
+
+    // Resend OTP to User Email
+    const resendOTPHandler = async () => {
+        if (formState.email) {
+            try {
+                const resend_otp_result = await relayService({
+                    url: email.RESEND_VERIFY_EMAIL, 
+                    method: "POST", 
+                    data: {
+                        email: formState.email
+                    }
+                })
+
+                if ( resend_otp_result?.data?.success ) {
+
+                    toast.success(resend_otp_result?.data?.message);
+
+                }
+            } catch (error) {
+
+                toast.error("Something Went Wrong");
+                console.log("Resend OTP Handler Error ==> ", error.response);
+
+            }
+        } else {
+            toast.error("Something Went Wrong - Please SignUp First");
+            navigate("/signup");
+        }
+        
     }
 
-    const handleVerifyAndSignup = async (event) => {
-
-        event.preventDefault();
-        
-        console.log("formState => ", formState);
-
-        const verify_email_result = await relayService({
-            url: email.VERIFY_EMAIL, 
-            method: "POST", 
-            data: {
-                email: formState.email, 
-                otp: formState.otp
-            }
-        });
-
-        if ( verify_email_result?.status === 200 && verify_email_result?.data?.success === true ) {
-            navigate("/login", {
-                state: {
-                    email: formState.email
-                }
-            });
-        } else {
-            console.log("Wrong OTP");
+    useEffect( () => {
+        if ( location.state?.resend_it ) {
+            resendOTPHandler();
         }
+    }, []);
 
-        console.log("verify_email_result", verify_email_result);
+    
+    const handleVerifyAndSignup = async (event) => {
+        event.preventDefault();
 
+        if ( formState.otp === null ) {
+            toast.error("Please Provide Email OTP");
+        } else {
+            try {
+                const verify_email_result = await relayService({
+                    url: email.VERIFY_EMAIL, 
+                    method: "POST", 
+                    data: {
+                        email: formState.email, 
+                        otp: formState.otp
+                    }
+                });
+
+                if ( verify_email_result?.status === 200 && verify_email_result?.data?.success === true ) {
+                    toast.success("User Verified Successfully");
+                    navigate("/login", {
+                        state: {
+                            email: formState.email
+                        }
+                    });
+                }
+
+            } catch (error) {
+
+                if ( error?.response?.data?.message === "OTP has expired." ) {
+                    toast.error("OTP has expired, Please Re-Generate Email OTP");
+                    setFormState( (prev) => ({
+                        ...prev,
+                    otp: null
+                    }))
+                }  else if ( error?.response?.data?.message === "Invalid OTP.") {
+                    toast.error("Invalid OTP, Please Correct OTP");
+                    setFormState( (prev) => ({
+                        ...prev,
+                    otp: null
+                    }))
+                } else {
+                    toast.error("Something Went Wrong");
+                    console.log("handle Verify AndS ignup Error ==> ", error.response );
+                }
+            }
+        }
     }
 
     return (
@@ -106,7 +159,7 @@ const VerifyEmail = () => {
                         </Link>
                         <button
                             className="flex items-center text-blue-100 gap-x-2"
-                            onClick={() => dispatch(sendOtp(signupData.email))}
+                            onClick={() => resendOTPHandler()}
                         >
                         <RxCountdownTimer />
                             Resend it

@@ -57,6 +57,16 @@ const ForgotPassword = () => {
     // Reset Password Function
     const resetPasswordHandler = async (event) => {
         event.preventDefault();
+
+        if ( forgotPasswordData.password !== forgotPasswordData.confirm_password ) {
+            toast.error("Confirm Password is Not Match.");
+            setForgotPasswordData( (prev) => ({
+                ...prev,
+                password: "",
+                confirm_password: ""
+            }));
+            return;
+        }
         
         try {
 
@@ -81,7 +91,16 @@ const ForgotPassword = () => {
         } catch (error) {
             console.log("error", error.response);
 
-            start error handling page OK || start from here
+            if ( error?.response?.data?.title === "Wrong OTP" ) {
+
+                toast.error(error?.response?.data?.message);
+                setForgotPasswordData( (prev) => ({
+                    ...prev,
+                    email_otp: ""
+                }));
+
+            }
+            
         }
 
     }

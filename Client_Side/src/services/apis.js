@@ -15,3 +15,7 @@ export const email = {
 export const categories = {
     CATEGORIES_API: BASE_URL + "/course/category/show-all-category"
 }
+
+export const contactusEndpoint = {
+    CONTACT_US_API: BASE_URL + "/anuj"
+}

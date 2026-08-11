@@ -1,5 +1,7 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom"
+import { useAppDispatch, useAppSelector } from "./redux/hooks/index.ts";
+import { ACCOUNT_TYPE } from "./utils/constants.js"; 
 
 import PrivateRoute from "./components/core/Auth/PrivateRoute.jsx";
 
@@ -13,8 +15,20 @@ import ForgotPassword from "./pages/ForgotPassword.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import VerifyEmail from "./pages/VerifyEmail.jsx";
 
+// Dashboard Pages
+import MyProfile from "./components/core/dashboard/MyProfile.jsx";
+import Settings from "./components/core/dashboard/Settings/Setting.jsx";
+import Cart from "./components/core/dashboard/Cart/Cart.jsx";
+import EnrolledCourses from "./components/core/dashboard/EnrolledCourses.jsx";
+import Instructor from "./components/core/dashboard/InstructorDashboard/Instructor.jsx";
+import AddCourse from "./components/core/dashboard/AddCourse/AddCourse.jsx";
+import MyCourses from "./components/core/dashboard/MyCourses.jsx";
+import EditCourse from "./components/core/dashboard/EditCourse.jsx";
 
 const App = () => {
+
+  const { user } = useAppSelector( (state) => state.profile );
+  console.log("user", user)
 
   return (
     <div className="w-screen min-h-screen bg-richblack-900 flex flex-col font-inter">
@@ -32,9 +46,39 @@ const App = () => {
         <Route path="/verify-user" element={<VerifyEmail />}/>
 
         {/* Protected Routes */}
-        <Route path="/user" element={ <PrivateRoute /> }>
-          <Route path="dashboard" element={ <Dashboard /> }/>
+        <Route element={ <PrivateRoute /> }>
+
+          <Route path="/dashboard" element={ <Dashboard /> }>
+
+            <Route path="my-profile" element={ <MyProfile /> }/>
+            <Route path="settings" element={ <Settings /> }/>
+
+            {/* Component for Student  */}
+            { user?.account_type === ACCOUNT_TYPE.STUDENT && (
+                <>
+                  <Route path="cart" element={<Cart />} />
+                  <Route path="enrolled-courses" element={<EnrolledCourses />} />
+                </>
+              )
+            }            
+            
+            {/* Component for Instructor  */}
+            { user?.account_type === ACCOUNT_TYPE.INSTRUCTOR && (
+                <>
+                  <Route path="instructor" element={<Instructor />} />
+                  <Route path="add-course" element={<AddCourse />} />
+                  <Route path="my-courses" element={<MyCourses />} />
+                  <Route path="edit-course/:courseId" element={<EditCourse />} />
+                
+                </>
+              )
+            }
+            
+          </Route>
+
         </Route>
+
+        
       </Routes>
 
     </div>

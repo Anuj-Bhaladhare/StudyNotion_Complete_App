@@ -2,21 +2,15 @@ import React from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import { useAppSelector } from "./../../../redux/hooks/index.ts";
 
-const PrivateRoute = () => {
+const PrivateRoute = ({children}) => {
 
     const { token } = useAppSelector(state => state.auth);
 
-    return (
-        <>
-            {
-                token ? (
-                    <Outlet />
-                ) : (
-                    <Navigate to="/login" replace />
-                )
-            }
-        </>
-    )
+    if ( token !== null ) {
+        return <Outlet />;
+    }
+
+    return <Navigate to="/login" replace />
 
 }
 

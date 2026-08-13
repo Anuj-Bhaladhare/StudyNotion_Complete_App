@@ -316,6 +316,30 @@ CREATE TABLE course_student (
 );
 
 
+CREATE TABLE contact_us (
+    
+    id BIGSERIAL PRIMARY KEY,
+
+    first_name VARCHAR(100) NOT NULL,
+
+    last_name VARCHAR(100) NOT NULL,
+
+    email VARCHAR(255) NOT NULL,
+
+    phone VARCHAR(20),
+
+    message TEXT NOT NULL,
+    
+    country_code VARCHAR(20),
+
+    status VARCHAR(30) NOT NULL DEFAULT 'new',
+
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    
+);
+
 
 users               -> DONE
 profiles            -> DONE

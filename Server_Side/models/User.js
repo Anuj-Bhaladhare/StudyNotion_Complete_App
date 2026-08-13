@@ -100,6 +100,28 @@ const findUserByUserId = async (user_id) => {
 }
 
 
+const updateUserByUserId = async (id, first_name, last_name, phone_number) => {
+    try {
+
+        const result = await pool.query(
+            `
+                UPDATE users
+                SET first_name = $1, last_name = $2, phone_number = $3
+                WHERE id = $4;
+            `,
+            [first_name, last_name, phone_number, id]
+        );
+
+        return result.rowCount === 1 ? true : false;
+
+    } catch (error) {
+
+        console.error("Database Error [updateUserByUserId]:", error.message);
+        throw error;
+
+    }
+}
+
 const updateUserPassword = async (email, hash_password) => {
     try {
 
@@ -112,7 +134,7 @@ const updateUserPassword = async (email, hash_password) => {
             [hash_password, email]
         );
 
-        return result.rowCount > 0 ? true : false;
+        return result?.rowCount > 0 ? true : false;
 
     } catch (error) {
 
@@ -122,12 +144,12 @@ const updateUserPassword = async (email, hash_password) => {
     }
 }
 
-
 module.exports = {
     findUserByEmail,
     createUserEntry,
     verifyUserDatabase,
     findUserByUserId,
+    updateUserByUserId,
     updateUserPassword
 }
 

@@ -2,9 +2,10 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+
 require("dotenv").config();
 
-const { findUserByEmail, createUserEntry, updateUserPassword } = require("./../models/User.js");
+const { findUserByEmail, createUserEntry, updateUserPassword, findUserByUserId } = require("./../models/User.js");
 const { sendVerificationEmail } = require("./Email.js");
 const { generateOTP, findLatestOtpByEmail } = require("./../models/OTP.js");
 
@@ -311,17 +312,83 @@ const forgotPassword = async (req, res) => {
 
 // Change Password Controller
 const changePassword = async (req, res) => {
-    try {
-        console.log("changePassword");
-    } catch (error) {
-        console.log("Error Occured in Change Password Controller", error.mesage);
-        return res.status(500).json({
-            "success": false,
-            "message": "Error Occured in Change Password Controller",
-            "error": error
-        });
+  try {
+    const { id } = req.params;
+    const { current_password, new_password } = req.body;
+
+    console.log(
+      "=======>",
+      current_password,
+      new_password,
+      id
+    );
+
+    // 1. Find user
+    const db_user_result = await findUserByUserId(id);
+
+    if (!db_user_result) {
+      return res.status(404).json({
+        success: false,
+        message: "User Not Found",
+      });
     }
-}
+
+    console.log(
+      "db_user_result.password_hash",
+      db_user_result.password_hash
+    );
+
+    // 2. Compare current password
+    const compare_password = await bcrypt.compare(
+      current_password,
+      db_user_result.password_hash
+    );
+
+    if (!compare_password) {
+      return res.status(401).json({
+        success: false,
+        message: "Current Password is Incorrect.",
+      });
+    }
+
+    // 3. Hash new password
+    const hash_password = await bcrypt.hash(new_password, 10);
+
+    // 4. Update password
+    const update_password_db = await updateUserPassword(
+      db_user_result.email,
+      hash_password
+    );
+
+    if (update_password_db) {
+      console.log("WORKING WORKING");
+
+      return res.status(200).json({
+        success: true,
+        title: "Password Updated Successfully.",
+        message: "Your password was successfully updated.",
+      });
+    }
+
+    return res.status(400).json({
+      success: false,
+      title: "Password Not Updated.",
+      message: "Unable to update your password.",
+    });
+
+  } catch (error) {
+    console.log(
+      "Error Occurred in Change Password Controller",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Error Occurred in Change Password Controller",
+      error: error.message,
+    });
+  }
+};
 
 
 // Export Module

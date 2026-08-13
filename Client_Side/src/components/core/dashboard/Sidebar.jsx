@@ -1,11 +1,15 @@
 import React, { useState } from "react";
-import { Toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import SidebarLink from "./SidebarLink.jsx";
 import { VscSignOut } from "react-icons/vsc";
 import ConfirmationModal from "./../../common/ConfirmationModal.jsx";
 import { sidebarLinks } from "./../../../data/dashboard-links.js";
 import { useAppDispatch, useAppSelector } from "./../../../redux/hooks/index.ts";
+
+import { setToken } from "./../../../redux/slices/authSlice.js";
+import { setUser } from "./../../../redux/slices/profileSlice.js";
+import { resetCart } from "./../../../redux/slices/cartSlice.js";
 
 const Sidebar = () => {
 
@@ -15,11 +19,14 @@ const Sidebar = () => {
     const navigate = useNavigate();
 
     const logout = () => {
-        console.log("Logout");
-        localStorage.removeItem(token);
-        localStorage.removeItem(user);
-        
 
+        dispatch(setToken(null))
+        dispatch(setUser(null))
+        dispatch(resetCart())
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        toast.success("Logged Out")
+        navigate("/")
     }
 
     return (

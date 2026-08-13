@@ -20,7 +20,7 @@ const cartSlice = createSlice({
                 toast.error("Course already in cart")
                 return
             }
-            
+
             // If the course is not in the cart, add it to the cart
             state.cart.push(course)
 
@@ -71,5 +71,5 @@ const cartSlice = createSlice({
 })
 
 
-
+export const { addToCart, removeFromCart, resetCart } = cartSlice.actions;
 export default cartSlice.reducer;

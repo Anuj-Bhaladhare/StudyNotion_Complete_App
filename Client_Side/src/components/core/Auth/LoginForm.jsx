@@ -36,13 +36,11 @@ const LoginForm = () => {
                 }
             })
 
-            console.log("login_result ===> ", login_result);
-
             if ( login_result?.status === 200 && login_result?.data?.success ) {
 
                 // User Data and JWT Token store in local-storage
-                localStorage.setItem("token", JSON.stringify(login_result?.data?.data?.user));
-                localStorage.setItem("user", JSON.stringify(login_result?.data?.data?.token));
+                localStorage.setItem("user", JSON.stringify(login_result?.data?.data?.user));
+                localStorage.setItem("token", JSON.stringify(login_result?.data?.data?.token));
 
                 // set JWT Token
                 dispatch(setToken(login_result?.data?.data?.token));
@@ -54,7 +52,7 @@ const LoginForm = () => {
                 // axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`;
 
                 // Redirect the user
-                navigate("/user/dashboard");
+                navigate("/dashboard/my-profile");
 
             }
 

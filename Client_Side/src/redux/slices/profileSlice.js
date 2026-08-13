@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { jwtDecode } from "jwt-decode";
 
 const initialState = {
-    user: localStorage.getItem("user") ? jwtDecode(JSON.parse(localStorage.getItem("user"))) : null,
+    user: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null,
     loading: false
 }
 

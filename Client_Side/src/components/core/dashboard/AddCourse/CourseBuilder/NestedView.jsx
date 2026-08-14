@@ -6,11 +6,7 @@ import { RiDeleteBin6Line } from "react-icons/ri"
 import { RxDropdownMenu } from "react-icons/rx"
 import { useDispatch, useSelector } from "react-redux"
 
-import {
-  deleteSection,
-  deleteSubSection,
-} from "../../../../../services/operations/courseDetailsAPI"
-import { setCourse } from "../../../../../slices/courseSlice"
+import { setCourse } from "./../../../../../redux/slices/courseSlice.js";
 import ConfirmationModal from "../../../../common/ConfirmationModal"
 import SubSectionModal from "./SubSectionModal"
 
@@ -24,6 +20,14 @@ export default function NestedView({ handleChangeEditSectionName }) {
   const [editSubSection, setEditSubSection] = useState(null)
   // to keep track of confirmation modal
   const [confirmationModal, setConfirmationModal] = useState(null)
+
+  const deleteSection = () => {
+    console.log("deleteSection");
+  }
+
+  const deleteSubSection = () => {
+    console.log("deleteSubSection");
+  }
 
   const handleDeleleSection = async (sectionId) => {
     const result = await deleteSection({

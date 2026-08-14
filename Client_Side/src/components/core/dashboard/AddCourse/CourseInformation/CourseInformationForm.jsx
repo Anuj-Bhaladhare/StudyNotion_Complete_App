@@ -4,13 +4,7 @@ import { toast } from "react-hot-toast"
 import { HiOutlineCurrencyRupee } from "react-icons/hi"
 import { MdNavigateNext } from "react-icons/md"
 import { useDispatch, useSelector } from "react-redux"
-
-import {
-  addCourseDetails,
-  editCourseDetails,
-  fetchCourseCategories,
-} from "../../../../../services/operations/courseDetailsAPI"
-import { setCourse, setStep } from "../../../../../slices/courseSlice"
+import { setCourse, setStep } from "../../../../../redux/slices/courseSlice.js"
 import { COURSE_STATUS } from "../../../../../utils/constants"
 import IconBtn from "../../../../common/IconBtn"
 import Upload from "../Upload"
@@ -31,6 +25,19 @@ export default function CourseInformationForm() {
   const { course, editCourse } = useSelector((state) => state.course)
   const [loading, setLoading] = useState(false)
   const [courseCategories, setCourseCategories] = useState([])
+
+
+  const addCourseDetails = () => {
+    console.log("addCourseDetails");
+  }
+
+  const editCourseDetails = () => {
+    console.log("editCourseDetails");
+  }
+
+  const fetchCourseCategories = () => {
+    console.log("fetchCourseCategories");
+  }
 
   useEffect(() => {
     const getCategories = async () => {

@@ -6,14 +6,10 @@ import { MdNavigateNext } from "react-icons/md"
 import { useDispatch, useSelector } from "react-redux"
 
 import {
-  createSection,
-  updateSection,
-} from "../../../../../services/operations/courseDetailsAPI"dfg sdf
-import {
   setCourse,
   setEditCourse,
   setStep,
-} from "../../../../../slices/courseSlice"
+} from "../../../../../redux/slices/courseSlice.js"
 import IconBtn from "../../../../common/IconBtn"
 import NestedView from "./NestedView"
 
@@ -31,8 +27,14 @@ export default function CourseBuilderForm() {
   const [editSectionName, setEditSectionName] = useState(null)
   const dispatch = useDispatch()
 
-  const 
+  const createSection = () => {
+    console.log("createSection");
+  }
 
+  const updateSection = () => {
+    console.log("updateSection");
+  }
+  
   // handle form submission
   const onSubmit = async (data) => {
     // console.log(data)

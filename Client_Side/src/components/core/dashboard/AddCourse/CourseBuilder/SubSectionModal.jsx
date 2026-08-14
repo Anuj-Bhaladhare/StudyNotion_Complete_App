@@ -4,11 +4,7 @@ import { toast } from "react-hot-toast"
 import { RxCross2 } from "react-icons/rx"
 import { useDispatch, useSelector } from "react-redux"
 
-import {
-  createSubSection,
-  updateSubSection,
-} from "../../../../../services/operations/courseDetailsAPI"
-import { setCourse } from "../../../../../slices/courseSlice"
+import { setCourse } from "./../../../../../redux/slices/courseSlice.js"
 import IconBtn from "../../../../common/IconBtn"
 import Upload from "../Upload"
 
@@ -44,6 +40,14 @@ export default function SubSectionModal({
       setValue("lectureVideo", modalData.videoUrl)
     }
   }, [])
+
+  const createSubSection = () => {
+    console.log("createSubSection");
+  }
+
+  const updateSubSection = () => {
+    console.log("updateSubSection");
+  }
 
   // detect whether form is updated or not
   const isFormUpdated = () => {
